@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Button from '@mui/material/Button';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
+import { MapContainer, TileLayer, GeoJSON} from 'react-leaflet'
 import axios from "axios";
 
-import 'leaflet/dist/leaflet.css';
-
+import "leaflet/dist/leaflet.css";
 
 function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const geoJsonLayer = useRef(null);
 
   useEffect(() => {
     const L = require("leaflet");
@@ -19,11 +19,18 @@ function App() {
     iconUrl: require("leaflet/dist/images/marker-icon.png"),
     shadowUrl: require("leaflet/dist/images/marker-shadow.png")
     });
+    do_download1(8.562591816333036,47.45048786731165, 8.562591816333036,47.45048786731165);
     }, []);
 
-  function do_download() {
+  useEffect(() => {
+    if (geoJsonLayer.current) {
+        geoJsonLayer.current.clearLayers().addData(data);
+      }
+  }, [data]);
+
+  function do_download1(lng1, lat1, lng2, lat2) {
     // TODO: Parametrisieren
-    var url = "https://vm1.sourcelab.ch/geodetic/line?startlat=47.5349&startlng=7.6415&endlat=8.9738&endlng=-79.5068&pts=100";
+    var url = `https://vm1.sourcelab.ch/geodetic/line?startlat=${lat1}&startlng=${lng1}&endlat=${lat2}&endlng=${lng2}&pts=100`;
 
     setLoading(true);
     axios
@@ -39,34 +46,40 @@ function App() {
       });
   }
 
+
+
   return (
     <>
       <h1>Geodetic Line</h1>
+      <div>Wohin wollen Sie von Zürich aus fliegen?</div>
 
-      {!data &&
-      <Button variant="contained" onClick={() => { do_download() }}>
-          Convert
+      <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -0.18263989409720086,51.15235296503555) }}>
+          London
         </Button>
-      }
-
-      {loading && <>
-                     <div>API Aufruf, bitte warten!</div><br/>
-                  </>
-      }
+      <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -73.78466299589385,40.64583089596164) }}>
+        New York
+        </Button>
+      <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 151.18270256957388,-33.94726186763252) }}>
+      Sydney
+        </Button>
+        <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 18.59898390000502,-33.96991989701898) }}>
+      Kapstadt
+        </Button>
+        <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 139.78020337829975,35.54921859728793) }}>
+      Tokio
+        </Button>
 
       {error &&   <>
                      <div>ERROR API Aufruf fehlgeschlagen</div>{console.log(error)}<br/>
                   </>}
 
       {data &&  <>
-                  <MapContainer center={[47.5349, 7.6416]} zoom={2} scrollWheelZoom={true}
+        <MapContainer center={[47.5349, 7.6416]} zoom={2} scrollWheelZoom={true}
                     style={{ height: "600px", width: "100%" }} >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'/>
-
-                  <GeoJSON data={data} style={{ weight: 8, opacity: '30%', color: 'green'}}/>
-
-                  </MapContainer>
+              <GeoJSON data={data} ref={geoJsonLayer} style={{ weight: 8, opacity: '30%', color: 'green'}}/>
+      </MapContainer>
                 </>}
 
       </>
