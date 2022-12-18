@@ -29,7 +29,6 @@ function App() {
   }, [data]);
 
   function do_download1(lng1, lat1, lng2, lat2) {
-    // TODO: Parametrisieren
     var url = `https://vm1.sourcelab.ch/geodetic/line?startlat=${lat1}&startlng=${lng1}&endlat=${lat2}&endlng=${lng2}&pts=100`;
 
     setLoading(true);
@@ -50,24 +49,58 @@ function App() {
 
   return (
     <>
-      <h1>Geodetic Line</h1>
-      <div>Wohin wollen Sie von Zürich aus fliegen?</div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Wohin möchten Sie von Zürich aus fliegen?</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Zielflughafen
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <li><a class="nav-link" tabindex="1" href="#" aria-current="page" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -0.18263989409720086,51.15235296503555) }}>London</a></li>
+            <li><a class="nav-link" tabindex="2" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -73.78466299589385,40.64583089596164) }}>New York</a></li>
+            <li><a class="nav-link" tabindex="3" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 18.59898390000502,-33.96991989701898) }}>Kapstadt</a></li>
+            <li><a class="nav-link" tabindex="4" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 139.78020337829975,35.54921859728793) }}>Tokio</a></li>
+            <li><a class="nav-link" tabindex="5" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 151.1783237100475,-33.939401877079874) }}>Sydney</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
-      <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -0.18263989409720086,51.15235296503555) }}>
-          London
-        </Button>
-      <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -73.78466299589385,40.64583089596164) }}>
-        New York
-        </Button>
-      <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 151.18270256957388,-33.94726186763252) }}>
-      Sydney
-        </Button>
-        <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 18.59898390000502,-33.96991989701898) }}>
-      Kapstadt
-        </Button>
-        <Button variant="contained" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 139.78020337829975,35.54921859728793) }}>
-      Tokio
-        </Button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand">Zielflughafen</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" tabindex="1" href="#" aria-current="page" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -0.18263989409720086,51.15235296503555) }}>London</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" tabindex="2" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -73.78466299589385,40.64583089596164) }}>New York</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" tabindex="3" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 18.59898390000502,-33.96991989701898) }}>Kapstadt</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" tabindex="4" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 139.78020337829975,35.54921859728793) }}>Tokio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" tabindex="5" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 151.1783237100475,-33.939401877079874) }}>Sydney</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
       {error &&   <>
                      <div>ERROR API Aufruf fehlgeschlagen</div>{console.log(error)}<br/>
