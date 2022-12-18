@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Button from '@mui/material/Button';
 import { MapContainer, TileLayer, GeoJSON} from 'react-leaflet'
 import axios from "axios";
 
@@ -10,6 +9,17 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const geoJsonLayer = useRef(null);
+  const airports = [
+    {value: 'London', text: 'London'},
+    {value: 'New York', text: 'New York'},
+    {value: 'Kapstadt', text: 'Kapstadt'},
+    {value: 'Tokio', text: 'Tokio'},
+    {value: 'Sydney', text: 'Sydney'},
+    {value: 'Zurich', text: 'Zurich'},
+  ]
+  const [fin, setfinn] = useState(airports[0].value);
+  const [fout, setfoutt] = useState(airports[1].value);
+
 
   useEffect(() => {
     const L = require("leaflet");
@@ -19,7 +29,7 @@ function App() {
     iconUrl: require("leaflet/dist/images/marker-icon.png"),
     shadowUrl: require("leaflet/dist/images/marker-shadow.png")
     });
-    do_download1(8.562591816333036,47.45048786731165, 8.562591816333036,47.45048786731165);
+    do_download1([-0.18263989409720086,51.15235296503555, -73.78466299589385,40.64583089596164]);
     }, []);
 
   useEffect(() => {
@@ -28,8 +38,8 @@ function App() {
       }
   }, [data]);
 
-  function do_download1(lng1, lat1, lng2, lat2) {
-    var url = `https://vm1.sourcelab.ch/geodetic/line?startlat=${lat1}&startlng=${lng1}&endlat=${lat2}&endlng=${lng2}&pts=100`;
+  function do_download1(arry) {
+    var url = `https://vm1.sourcelab.ch/geodetic/line?startlat=${arry[1]}&startlng=${arry[0]}&endlat=${arry[3]}&endlng=${arry[2]}&pts=100`;
 
     setLoading(true);
     axios
@@ -45,69 +55,67 @@ function App() {
       });
   }
 
+  function getCord(place) {
+    if (place === "London") {
+      return [-0.18263989409720086,51.15235296503555]
+    } else if (place === "New York") {
+      return [-73.78466299589385,40.64583089596164]
+    } else if (place === "Kapstadt") {
+      return [18.59898390000502,-33.96991989701898]
+    } else if (place === "Tokio") {
+      return [139.78020337829975,35.54921859728793]
+    } else if (place === "Sydney") {
+      return [151.1783237100475,-33.939401877079874]
+    } else if (place === "Zurich") {
+      return [8.562591816333036,47.45048786731165]
+    }
 
+  }  
+
+  function setfin(ffin) {
+    setfinn(ffin)
+    if (fout !== null && ffin !== fout){
+      setError(null)
+      do_download1(getCord(ffin).concat(getCord(fout)))
+    } else if (fout === ffin) {
+      setError("Airports identic");
+      setfinn(fin)
+    }
+
+  }
+
+  function setfout(ffout) {
+    setfoutt(ffout)
+    if (fin !== null && fin !== ffout) {
+      setError(null)
+      do_download1(getCord(fin).concat(getCord(ffout)))
+    } else if (ffout === fin) {
+      setError("Airports identic");
+      setfoutt(fout)
+    }
+
+  }
 
   return (
     <>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Wohin möchten Sie von Zürich aus fliegen?</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Zielflughafen
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <li><a class="nav-link" tabindex="1" href="#" aria-current="page" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -0.18263989409720086,51.15235296503555) }}>London</a></li>
-            <li><a class="nav-link" tabindex="2" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -73.78466299589385,40.64583089596164) }}>New York</a></li>
-            <li><a class="nav-link" tabindex="3" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 18.59898390000502,-33.96991989701898) }}>Kapstadt</a></li>
-            <li><a class="nav-link" tabindex="4" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 139.78020337829975,35.54921859728793) }}>Tokio</a></li>
-            <li><a class="nav-link" tabindex="5" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 151.1783237100475,-33.939401877079874) }}>Sydney</a></li>
-          </ul>
-        </li>
-      </ul>
+    <div class="new-nav">
+      <label for="airport-in">Wo wollen Sie starten?</label>
+      <select id="airport-in" size="6" value={fin} onChange={o => setfin(o.target.value)}>
+        {airports.map(airport => (<option key={airport.value} value={airport.value}>{airport.text}</option>))}
+      </select>
+      <br></br>
+      <label for="airport-out">Wo wollen Sie hin?</label>
+      <select id="airport-out" size="6" value={fout} onChange={o => setfout(o.target.value)}>
+        {airports.map(airport => (<option key={airport.value} value={airport.value}>{airport.text}</option>))}
+      </select>
     </div>
-  </div>
-</nav>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand">Zielflughafen</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" tabindex="1" href="#" aria-current="page" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -0.18263989409720086,51.15235296503555) }}>London</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" tabindex="2" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, -73.78466299589385,40.64583089596164) }}>New York</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" tabindex="3" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 18.59898390000502,-33.96991989701898) }}>Kapstadt</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" tabindex="4" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 139.78020337829975,35.54921859728793) }}>Tokio</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" tabindex="5" href="#" onClick={() => { do_download1(8.562591816333036,47.45048786731165, 151.1783237100475,-33.939401877079874) }}>Sydney</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
 
       {error &&   <>
-                     <div>ERROR API Aufruf fehlgeschlagen</div>{console.log(error)}<br/>
+                    <div id="div-error">{ error === "Airports iden." ? "Start- und Zielflughafen können nicht identisch sein!" : "ERROR API Aufruf fehlgeschlagen"}</div>{console.log(error)}<br/>
                   </>}
 
       {data &&  <>
-        <MapContainer center={[47.5349, 7.6416]} zoom={2} scrollWheelZoom={true}
+        <MapContainer center={[47.5349, 7.6416]} zoom={2} scrollWheelZoom={true} worldCopyJump={true} minZoom={2}
                     style={{ height: "600px", width: "100%" }} >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'/>
