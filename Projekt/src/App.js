@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON} from 'react-leaflet'
+import { MenuItem, Select } from '@mui/material';
 import axios from "axios";
 
 import "leaflet/dist/leaflet.css";
+import { red } from '@mui/material/colors';
 
 function App() {
   const [data, setData] = useState(null);
@@ -19,6 +21,9 @@ function App() {
   ]
   const [fin, setfinn] = useState(airports[0].value);
   const [fout, setfoutt] = useState(airports[1].value);
+  const mystyle = {padding: 4}
+  const mystyle1 = {margin: 8}
+  const mystyle2 = {color: "red"}
 
 
   useEffect(() => {
@@ -48,7 +53,7 @@ function App() {
         setData(response.data);
       })
       .catch((err) => {
-        setError(err);
+        setError("ERROR API Aufruf fehlgeschlagen");
       })
       .finally(() => {
         setLoading(false);
@@ -70,7 +75,7 @@ function App() {
       return [8.562591816333036,47.45048786731165]
     }
 
-  }  
+  }
 
   function setfin(ffin) {
     setfinn(ffin)
@@ -78,7 +83,7 @@ function App() {
       setError(null)
       do_download1(getCord(ffin).concat(getCord(fout)))
     } else if (fout === ffin) {
-      setError("Airports identic");
+      setError("Start- und Zielflughafen können nicht identisch sein!")
       setfinn(fin)
     }
 
@@ -90,7 +95,7 @@ function App() {
       setError(null)
       do_download1(getCord(fin).concat(getCord(ffout)))
     } else if (ffout === fin) {
-      setError("Airports identic");
+      setError("Start- und Zielflughafen können nicht identisch sein!")
       setfoutt(fout)
     }
 
@@ -99,19 +104,19 @@ function App() {
   return (
     <>
     <div class="new-nav">
-      <label for="airport-in">Wo wollen Sie starten?</label>
-      <select id="airport-in" size="6" value={fin} onChange={o => setfin(o.target.value)}>
-        {airports.map(airport => (<option key={airport.value} value={airport.value}>{airport.text}</option>))}
-      </select>
-      <br></br>
-      <label for="airport-out">Wo wollen Sie hin?</label>
-      <select id="airport-out" size="6" value={fout} onChange={o => setfout(o.target.value)}>
-        {airports.map(airport => (<option key={airport.value} value={airport.value}>{airport.text}</option>))}
-      </select>
+      <h1>Flugplan</h1>
+      <label for="airport-in" style={mystyle}>Wo wollen Sie starten?</label>
+      <Select id="airport-in" style={mystyle1} size="6" value={fin} onChange={o => setfin(o.target.value)}>
+        {airports.map(airport => (<MenuItem key={airport.value} value={airport.value}>{airport.text}</MenuItem>))}
+      </Select>
+      <label for="airport-out" style={mystyle}>Wo wollen Sie hin?</label>
+      <Select id="airport-out" style={mystyle1} size="6" value={fout} onChange={o => setfout(o.target.value)}>
+        {airports.map(airport => (<MenuItem key={airport.value} value={airport.value}>{airport.text}</MenuItem>))}
+      </Select>
     </div>
 
       {error &&   <>
-                    <div id="div-error">{ error === "Airports iden." ? "Start- und Zielflughafen können nicht identisch sein!" : "ERROR API Aufruf fehlgeschlagen"}</div>{console.log(error)}<br/>
+                    <div id="div-error" style={mystyle2}>{error}</div><br/>
                   </>}
 
       {data &&  <>
